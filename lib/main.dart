@@ -37,15 +37,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
-      statusBarBrightness: Brightness.light
-    ));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
+        .copyWith(statusBarBrightness: Brightness.light));
     return Scaffold(
-      backgroundColor: Colors.black12,
       body: new Center(
-        child: ,
+        child: new Image.asset('assets/splash_image/logo_splash.png'),
       ),
-    )
+    );
   }
 }
 
