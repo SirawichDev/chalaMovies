@@ -5,5 +5,5 @@ import './api_provider.dart';
 class Repo{
   final movieProvider = ChalaMovieProvider();
 
-  Future<movieModel> fetchAllList() => movieProvider.fetchList();
+  Future<MovieModel> fetchAllList() => movieProvider.fetchList();
 }

@@ -1,16 +1,16 @@
-class movieModel {
+class MovieModel {
   int page;
   int total_page;
   int total_results;
   List<Result> results = [];
 
-  movieModel.fromJson(Map<String, dynamic> parsedJson) {
+  MovieModel.fromJson(Map<String, dynamic> parsedJson) {
     page = parsedJson['page'];
     total_results = parsedJson['total_results'];
-    total_page = parsedJson['total_page'];
+    total_page = parsedJson['total_page' ];
     List<Result> temp = [];
     for (var i = 0; i < parsedJson['results'].length; i++) {
-     Result result = Result(parsedJson['result'](i));
+     Result result = Result(parsedJson['results'][i]);
      temp.add(result);
     }
     results = temp;
@@ -36,17 +36,17 @@ class Result {
     id = result['id'];
     video = result['video'];
     vote_avarage = result['vote_avarage'];
-    title = result['title'];
-    popularity = result['popularity'];
-    poster_path = result['poster_path'];
+    title = result['title'].toString();
+    popularity = result['popularity'].toDouble();
+    poster_path = result['poster_path'].toString();
 
     for (var i = 0; i < result['genre_ids'].length; i++) {
       genre_ids.add(result['genre_ids'][i]);
     }
-    backdrop_path = result['backdrop_path'];
+    backdrop_path = result['backdrop_path'].toString();
     adult = result['adult'];
     overview = result['overview'];
-    release_date = result['release_date'];
+    release_date = result['release_date'].toString();
   }
   String get fetch_release_date => release_date;
   String get fetch_backdrop_path => backdrop_path;
