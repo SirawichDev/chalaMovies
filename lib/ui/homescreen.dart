@@ -33,7 +33,7 @@ class _ContentPageState extends State<ContentPage> {
           return new Container(
             width: 500,
             height: 500,
-            color: Colors.pinkAccent.withOpacity(.6),
+            color: Colors.pinkAccent.withOpacity(.5),
           );
         } else if (snapshot.hasError) {
           print('Something is wrong');
