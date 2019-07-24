@@ -5,7 +5,8 @@ import 'package:flutter/services.dart';
 
 import './ui/homescreen.dart';
 
-void main() => runApp(MaterialApp(
+void main() =>
+    runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "ChalaMovie",
       home: SplashScreen(),
@@ -23,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   start() async {
-    var _duration = new Duration(seconds: 2);
+    var _duration = new Duration(seconds: 3);
     return new Timer(_duration, navigation);
   }
 
@@ -36,9 +37,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
-        .copyWith(statusBarBrightness: Brightness.light));
+//    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
+//        statusBarBrightness: Brightness.dark));
     return Scaffold(
       body: new Center(
         child: new Image.asset('assets/splash_image/logo_splash.png'),
