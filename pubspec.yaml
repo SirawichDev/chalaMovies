@@ -42,10 +42,12 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
+  fonts:
+    - family : RictyDiminished-Regular
+      fonts:
+        - asset : fonts/RictyDiminished-Regular.ttf
   assets:
-   - assets/
+    - assets/splash_image/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
