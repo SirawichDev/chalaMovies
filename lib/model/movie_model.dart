@@ -7,11 +7,11 @@ class MovieModel {
   MovieModel.fromJson(Map<String, dynamic> parsedJson) {
     page = parsedJson['page'];
     total_results = parsedJson['total_results'];
-    total_page = parsedJson['total_page' ];
+    total_page = parsedJson['total_page'];
     List<Result> temp = [];
     for (var i = 0; i < parsedJson['results'].length; i++) {
-     Result result = Result(parsedJson['results'][i]);
-     temp.add(result);
+      Result result = Result(parsedJson['results'][i]);
+      temp.add(result);
     }
     results = temp;
   }
@@ -38,7 +38,7 @@ class Result {
     vote_avarage = result['vote_avarage'];
     title = result['title'].toString();
     popularity = result['popularity'].toDouble();
-    poster_path = result['poster_path'].toString();
+    poster_path = "http://image.tmdb.org/t/p/w185//" + result['poster_path'].toString();
 
     for (var i = 0; i < result['genre_ids'].length; i++) {
       genre_ids.add(result['genre_ids'][i]);
@@ -48,17 +48,28 @@ class Result {
     overview = result['overview'];
     release_date = result['release_date'].toString();
   }
-  String get fetch_release_date => release_date;
-  String get fetch_backdrop_path => backdrop_path;
-  String get fetch_overview => overview;
-  bool get fetch_adult => adult;
-  List<int> get fetch_genre_ids => genre_ids;
-  String get fetch_poster_path => poster_path;
-  double get fetch_popularity => popularity;
-  String get fetch_title => title;
-  String get fetch_vote_average => vote_avarage;
-  bool get have_video => video;
-  int get fetch_id => id;
-  String get fetch_vote_count => vote_count;
 
+  String get fetch_release_date => release_date;
+
+  String get fetch_backdrop_path => backdrop_path;
+
+  String get fetch_overview => overview;
+
+  bool get fetch_adult => adult;
+
+  List<int> get fetch_genre_ids => genre_ids;
+
+  String get fetch_poster_path => poster_path;
+
+  double get fetch_popularity => popularity;
+
+  String get fetch_title => title;
+
+  String get fetch_vote_average => vote_avarage;
+
+  bool get have_video => video;
+
+  int get fetch_id => id;
+
+  String get fetch_vote_count => vote_count;
 }
