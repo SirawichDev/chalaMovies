@@ -1,7 +1,9 @@
+import 'package:chalaMovie/bloc/chala_most_watch_movies_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../bloc/chala_movies_bloc.dart';
+import 'dart:math';
 import '../model/movie_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,13 +12,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  ScrollController _controller;
+  double bgHeight = 300.0;
+  @override
+  void initState() {
+    super.initState();
+    _controller = ScrollController();
+    _controller.addListener(() {
+      setState(() {
+        bgHeight = max(0, 300.0 - _controller.offset);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark
         .copyWith(statusBarIconBrightness: Brightness.light));
-
     return Scaffold(
-      body: ContentPage(),
+      backgroundColor: Colors.black,
+      body: ListView(
+        controller: _controller,
+        children: <Widget>[ContentPage()],
+      ),
     );
   }
 }
@@ -33,9 +51,9 @@ class _ContentPageState extends State<ContentPage> {
     return Stack(
       children: <Widget>[
         Container(
-          padding: EdgeInsets.only(left: 20, top: 20),
+          padding: EdgeInsets.only(left: 10, top: 20),
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context).size.height + 100,
           color: Colors.black.withOpacity(.9),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,19 +94,49 @@ class _ContentPageState extends State<ContentPage> {
                       ),
                     ),
                     Positioned(
+                      top: 5,
                       right: 20,
                       child: new Text(
                         'See All',
                         style: TextStyle(
                             color: Colors.grey,
-                            fontSize: 18.0,
+                            fontSize: 15.0,
                             fontWeight: FontWeight.bold),
                       ),
                     )
                   ],
                 ),
               ),
-              CurrentMovies()
+              CurrentMovies(),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 28,
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      child: new Text(
+                        "Most Watch",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22.0),
+                      ),
+                    ),
+                    Positioned(
+                      top: 5,
+                      right: 20,
+                      child: new Text(
+                        "See All",
+                        style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              MostWatcher()
             ],
           ),
         ),
@@ -111,7 +159,7 @@ class _CurrentMoviesState extends State<CurrentMovies> {
       builder: (context, AsyncSnapshot<MovieModel> snapshot) {
         if (snapshot.hasData) {
           return Container(
-            margin: EdgeInsets.only(top: 20),
+            padding: EdgeInsets.all(3),
             width: MediaQuery.of(context).size.width - 20,
             height: 300,
             child: MCardLoad(snapshot),
@@ -148,8 +196,8 @@ class _MCardLoadState extends State<MCardLoad> {
           children: <Widget>[
             ConstrainedBox(
                 constraints: new BoxConstraints(
-                    maxHeight: 350.0,
-                    minHeight: 278.0,
+                    maxHeight: 290.0,
+                    minHeight: 190.0,
                     minWidth: MediaQuery.of(context).size.width * .45,
                     maxWidth: MediaQuery.of(context).size.width * .45),
                 child: Column(
@@ -161,7 +209,7 @@ class _MCardLoadState extends State<MCardLoad> {
                         child: Image.network(
                             widget.snapshot.data.results[index].poster_path)),
                     SizedBox(
-                      height: 5.0,
+                      height: 1.0,
                     ),
                     Text(
                       widget.snapshot.data.results[index].title,
@@ -176,6 +224,41 @@ class _MCardLoadState extends State<MCardLoad> {
           ],
         );
       },
+    );
+  }
+}
+
+class MostWatcher extends StatefulWidget {
+  @override
+  _MostWatcherState createState() => _MostWatcherState();
+}
+
+class _MostWatcherState extends State<MostWatcher> {
+  @override
+  Widget build(BuildContext context) {
+    bloc_most_watcher.fetchAllMostWatchMovies();
+    return Expanded(
+      child: Container(
+          width: MediaQuery.of(context).size.width - 20,
+          height: MediaQuery.of(context).size.height - 500,
+          child: StreamBuilder(
+            stream: bloc_most_watcher.allMostWatcherMovies,
+            builder: (context, AsyncSnapshot<MovieModel> snapshot) {
+              if (snapshot.hasData) {
+                return Container(
+                  margin: EdgeInsets.only(top: 20),
+                  width: MediaQuery.of(context).size.width - 20,
+        
+                  child: MCardLoad(snapshot),
+                );
+              } else if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              }
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          )),
     );
   }
 }
