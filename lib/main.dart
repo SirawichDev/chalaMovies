@@ -30,15 +30,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     start();
   }
 
   @override
   Widget build(BuildContext context) {
-//    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
-//        statusBarBrightness: Brightness.dark));
     return Scaffold(
       body: new Center(
         child: new Image.asset('assets/splash_image/logo_splash.png'),
@@ -54,7 +51,6 @@ class CustomRoute<T> extends MaterialPageRoute<T> {
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
-    // TODO: implement buildTransitions
     if (settings.isInitialRoute) return child;
 
     return new FadeTransition(
