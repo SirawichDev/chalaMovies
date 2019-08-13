@@ -14,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   ScrollController _controller;
   double bgHeight = 300.0;
+
   @override
   void initState() {
     super.initState();
@@ -52,8 +53,14 @@ class _ContentPageState extends State<ContentPage> {
       children: <Widget>[
         Container(
           padding: EdgeInsets.only(left: 10, top: 20),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height + 100,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height + 100,
           color: Colors.black.withOpacity(.9),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,7 +87,10 @@ class _ContentPageState extends State<ContentPage> {
                 height: 10.0,
               ),
               Container(
-                width: MediaQuery.of(context).size.width,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
                 height: 24,
                 child: Stack(
                   children: <Widget>[
@@ -109,7 +119,10 @@ class _ContentPageState extends State<ContentPage> {
               ),
               CurrentMovies(),
               Container(
-                width: MediaQuery.of(context).size.width,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
                 height: 28,
                 child: Stack(
                   children: <Widget>[
@@ -160,7 +173,10 @@ class _CurrentMoviesState extends State<CurrentMovies> {
         if (snapshot.hasData) {
           return Container(
             padding: EdgeInsets.all(3),
-            width: MediaQuery.of(context).size.width - 20,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width - 20,
             height: 300,
             child: MCardLoad(snapshot),
           );
@@ -198,8 +214,14 @@ class _MCardLoadState extends State<MCardLoad> {
                 constraints: new BoxConstraints(
                     maxHeight: 290.0,
                     minHeight: 190.0,
-                    minWidth: MediaQuery.of(context).size.width * .45,
-                    maxWidth: MediaQuery.of(context).size.width * .45),
+                    minWidth: MediaQuery
+                        .of(context)
+                        .size
+                        .width * .45,
+                    maxWidth: MediaQuery
+                        .of(context)
+                        .size
+                        .width * .45),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
@@ -233,23 +255,33 @@ class MostWatcher extends StatefulWidget {
   _MostWatcherState createState() => _MostWatcherState();
 }
 
+
 class _MostWatcherState extends State<MostWatcher> {
   @override
   Widget build(BuildContext context) {
     bloc_most_watcher.fetchAllMostWatchMovies();
     return Expanded(
       child: Container(
-          width: MediaQuery.of(context).size.width - 20,
-          height: MediaQuery.of(context).size.height - 500,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height - 20,
           child: StreamBuilder(
             stream: bloc_most_watcher.allMostWatcherMovies,
             builder: (context, AsyncSnapshot<MovieModel> snapshot) {
               if (snapshot.hasData) {
                 return Container(
                   margin: EdgeInsets.only(top: 20),
-                  width: MediaQuery.of(context).size.width - 20,
-        
-                  child: MCardLoad(snapshot),
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width - 20,
+
+                  child: McardMostWatcherLoad(snapshot),
                 );
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
@@ -261,4 +293,38 @@ class _MostWatcherState extends State<MostWatcher> {
           )),
     );
   }
+}
+
+class McardMostWatcherLoad extends StatefulWidget {
+  AsyncSnapshot<MovieModel> snapshot;
+
+  McardMostWatcherLoad(this.snapshot);
+
+  @override
+  _McardMostWatcherState createState() => _McardMostWatcherState();
+}
+
+class _McardMostWatcherState extends State<McardMostWatcherLoad> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      itemCount: widget.snapshot.data.results.length,
+      itemBuilder: (context, int index) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            new ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                    widget.snapshot.data.results[index].poster_path)),
+            SizedBox(
+              width: 15,
+            )
+          ],
+        );
+      },
+    );
+  }
+
 }
