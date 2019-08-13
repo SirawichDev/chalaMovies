@@ -4,7 +4,7 @@ class MovieModel {
   int total_results;
   List<Result> results = [];
 
-  MovieModel.fromJson(Map<String, dynamic> parsedJson) {
+  MovieModel.fromJson(Map<String, dynamic> parsedJson, bool isRecent) {
     page = parsedJson['page'];
     total_results = parsedJson['total_results'];
     total_page = parsedJson['total_page'];
@@ -13,6 +13,16 @@ class MovieModel {
       Result result = Result(parsedJson['results'][i]);
       temp.add(result);
     }
+
+    if (!isRecent)
+      temp.sort((a, b) {
+        return b.popularity.compareTo(a.popularity);
+      });
+    else
+      temp.sort((a, b) {
+        return DateTime.parse(b.release_date)
+            .compareTo(DateTime.parse(a.release_date));
+      });
     results = temp;
   }
 }
@@ -38,7 +48,8 @@ class Result {
     vote_avarage = result['vote_avarage'];
     title = result['title'].toString();
     popularity = result['popularity'].toDouble();
-    poster_path = "http://image.tmdb.org/t/p/w185//" + result['poster_path'].toString();
+    poster_path =
+        "http://image.tmdb.org/t/p/w185//" + result['poster_path'].toString();
 
     for (var i = 0; i < result['genre_ids'].length; i++) {
       genre_ids.add(result['genre_ids'][i]);
