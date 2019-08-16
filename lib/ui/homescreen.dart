@@ -1,4 +1,6 @@
+import 'package:chalaMovie/bloc/chala_genre_bloc.dart';
 import 'package:chalaMovie/bloc/chala_most_watch_movies_bloc.dart';
+import 'package:chalaMovie/model/genre_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _controller = ScrollController();
     _controller.addListener(() {
       setState(() {
-        bgHeight = max(0, 300.0 - _controller.offset);
+        bgHeight =
+            max(0, MediaQuery.of(context).size.height - _controller.offset);
       });
     });
   }
@@ -34,18 +37,53 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.black,
       body: ListView(
         controller: _controller,
-        children: <Widget>[ContentPage()],
+        children: <Widget>[PreloadContent()],
       ),
     );
   }
 }
 
+class PreloadContent extends StatefulWidget {
+  @override
+  _PreloadContentState createState() => _PreloadContentState();
+}
+
+class _PreloadContentState extends State<PreloadContent> {
+  @override
+  Widget build(BuildContext context) {
+    bloc_genre.fetchAllGenre();
+    return StreamBuilder(
+      stream: bloc_genre.allGenres,
+      builder: (context, AsyncSnapshot<GenreModel> snapshot) {
+        if (snapshot.hasData) {
+          return ContentPage(snapshot);
+        } else if (snapshot.hasError) {
+          return Text(snapshot.error.toString());
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+  }
+}
+
 class ContentPage extends StatefulWidget {
+  AsyncSnapshot<GenreModel> snapshotGenres;
+
+  ContentPage(this.snapshotGenres);
+
   @override
   _ContentPageState createState() => _ContentPageState();
 }
 
 class _ContentPageState extends State<ContentPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     bloc.fetchAllMovies();
@@ -53,14 +91,8 @@ class _ContentPageState extends State<ContentPage> {
       children: <Widget>[
         Container(
           padding: EdgeInsets.only(left: 10, top: 20),
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
-          height: MediaQuery
-              .of(context)
-              .size
-              .height + 100,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height + 100,
           color: Colors.black.withOpacity(.9),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,10 +119,7 @@ class _ContentPageState extends State<ContentPage> {
                 height: 10.0,
               ),
               Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
+                width: MediaQuery.of(context).size.width,
                 height: 24,
                 child: Stack(
                   children: <Widget>[
@@ -119,10 +148,7 @@ class _ContentPageState extends State<ContentPage> {
               ),
               CurrentMovies(),
               Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
+                width: MediaQuery.of(context).size.width,
                 height: 28,
                 child: Stack(
                   children: <Widget>[
@@ -149,7 +175,7 @@ class _ContentPageState extends State<ContentPage> {
                   ],
                 ),
               ),
-              MostWatcher()
+              MostWatcher(widget.snapshotGenres)
             ],
           ),
         ),
@@ -173,10 +199,7 @@ class _CurrentMoviesState extends State<CurrentMovies> {
         if (snapshot.hasData) {
           return Container(
             padding: EdgeInsets.all(3),
-            width: MediaQuery
-                .of(context)
-                .size
-                .width - 20,
+            width: MediaQuery.of(context).size.width - 20,
             height: 300,
             child: MCardLoad(snapshot),
           );
@@ -205,7 +228,7 @@ class _MCardLoadState extends State<MCardLoad> {
   Widget build(BuildContext context) {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: widget.snapshot.data.results.length,
+      itemCount: 5,
       itemBuilder: (context, int index) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -214,14 +237,8 @@ class _MCardLoadState extends State<MCardLoad> {
                 constraints: new BoxConstraints(
                     maxHeight: 290.0,
                     minHeight: 190.0,
-                    minWidth: MediaQuery
-                        .of(context)
-                        .size
-                        .width * .45,
-                    maxWidth: MediaQuery
-                        .of(context)
-                        .size
-                        .width * .45),
+                    minWidth: MediaQuery.of(context).size.width * .45,
+                    maxWidth: MediaQuery.of(context).size.width * .45),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
@@ -251,10 +268,13 @@ class _MCardLoadState extends State<MCardLoad> {
 }
 
 class MostWatcher extends StatefulWidget {
+  AsyncSnapshot<GenreModel> genresSnapshot;
+
+  MostWatcher(this.genresSnapshot);
+
   @override
   _MostWatcherState createState() => _MostWatcherState();
 }
-
 
 class _MostWatcherState extends State<MostWatcher> {
   @override
@@ -262,26 +282,16 @@ class _MostWatcherState extends State<MostWatcher> {
     bloc_most_watcher.fetchAllMostWatchMovies();
     return Expanded(
       child: Container(
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
-          height: MediaQuery
-              .of(context)
-              .size
-              .height - 20,
+          width: MediaQuery.of(context).size.width - 20,
+          height: MediaQuery.of(context).size.height - 514,
           child: StreamBuilder(
             stream: bloc_most_watcher.allMostWatcherMovies,
             builder: (context, AsyncSnapshot<MovieModel> snapshot) {
               if (snapshot.hasData) {
                 return Container(
-                  margin: EdgeInsets.only(top: 20),
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width - 20,
 
-                  child: McardMostWatcherLoad(snapshot),
+
+                  child: McardMostWatcherLoad(snapshot, widget.genresSnapshot),
                 );
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
@@ -297,8 +307,9 @@ class _MostWatcherState extends State<MostWatcher> {
 
 class McardMostWatcherLoad extends StatefulWidget {
   AsyncSnapshot<MovieModel> snapshot;
+  AsyncSnapshot<GenreModel> genresSnapshot;
 
-  McardMostWatcherLoad(this.snapshot);
+  McardMostWatcherLoad(this.snapshot, this.genresSnapshot);
 
   @override
   _McardMostWatcherState createState() => _McardMostWatcherState();
@@ -309,22 +320,100 @@ class _McardMostWatcherState extends State<McardMostWatcherLoad> {
   Widget build(BuildContext context) {
     return ListView.builder(
       scrollDirection: Axis.vertical,
-      itemCount: widget.snapshot.data.results.length,
+      itemCount: 4,
       itemBuilder: (context, int index) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            new ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+        String genres = widget.genresSnapshot.data
+            .get_genre(widget.snapshot.data.results[index].genre_ids);
+        double vote =
+            double.parse(widget.snapshot.data.results[index].vote_average);
+        Widget starChecker() {
+          if (vote >= 5.5 && vote <= 3.6) {
+            return Icon(Icons.star_half, color: Colors.greenAccent);
+          } else if (vote <= 3.5 && vote >= 0.0) {
+            return Icon(Icons.star_border, color: Colors.greenAccent);
+          }
+          return Icon(
+            Icons.star,
+            color: Colors.greenAccent,
+          );
+        }
+
+        return Column(children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container(
                 child: Image.network(
-                    widget.snapshot.data.results[index].poster_path)),
-            SizedBox(
-              width: 15,
-            )
-          ],
-        );
+                    widget.snapshot.data.results[index].poster_path),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width - 20 - 185,
+                height: 300,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                     top: 20, left: 10, right: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      new Text(
+                        widget.snapshot.data.results[index].title,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      new Text(
+                        widget.snapshot.data.results[index].release_date,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      new Text(
+                        genres,
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          starChecker(),
+                          RichText(
+                            text: TextSpan(
+                                text: widget
+                                    .snapshot.data.results[index].vote_average
+                                    .toString(),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 18),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: ' /10',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 14))
+                                ]),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+          SizedBox(
+            height: 4,
+          )
+        ]);
       },
     );
   }
-
 }
