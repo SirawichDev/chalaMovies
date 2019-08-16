@@ -31,7 +31,7 @@ class Result {
   String vote_count;
   int id;
   bool video;
-  var vote_avarage;
+  String vote_average;
   String title;
   double popularity;
   String poster_path;
@@ -45,11 +45,11 @@ class Result {
     vote_count = result['vote_count'].toString();
     id = result['id'];
     video = result['video'];
-    vote_avarage = result['vote_avarage'];
+    vote_average = result['vote_average'].toString();
     title = result['title'].toString();
     popularity = result['popularity'].toDouble();
     poster_path =
-        "http://image.tmdb.org/t/p/w185//" + result['poster_path'].toString();
+        "http://image.tmdb.org/t/p/w185/" + result['poster_path'].toString();
 
     for (var i = 0; i < result['genre_ids'].length; i++) {
       genre_ids.add(result['genre_ids'][i]);
@@ -76,7 +76,7 @@ class Result {
 
   String get fetch_title => title;
 
-  String get fetch_vote_average => vote_avarage;
+  String get fetch_vote_average => vote_average;
 
   bool get have_video => video;
 
