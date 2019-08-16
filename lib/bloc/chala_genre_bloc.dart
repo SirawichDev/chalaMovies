@@ -18,4 +18,4 @@ class ChalaGenreBloc {
   }
 }
 
-final bloc = ChalaGenreBloc();
+final bloc_genre = ChalaGenreBloc();
