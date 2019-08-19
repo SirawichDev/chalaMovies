@@ -1,6 +1,7 @@
 import 'package:chalaMovie/bloc/chala_genre_bloc.dart';
 import 'package:chalaMovie/bloc/chala_most_watch_movies_bloc.dart';
 import 'package:chalaMovie/model/genre_model.dart';
+import 'package:chalaMovie/ui/detail_movie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,9 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark
-        .copyWith(statusBarIconBrightness: Brightness.light));
+        .copyWith(statusBarIconBrightness: Brightness.dark));
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.transparent,
       body: ListView(
         controller: _controller,
         children: <Widget>[PreloadContent()],
@@ -93,7 +94,7 @@ class _ContentPageState extends State<ContentPage> {
           padding: EdgeInsets.only(left: 10, top: 20),
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height + 100,
-          color: Colors.black.withOpacity(.9),
+          color: Colors.black,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
@@ -117,6 +118,11 @@ class _ContentPageState extends State<ContentPage> {
               ),
               SizedBox(
                 height: 10.0,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width - 40,
+                height: 0.5,
+                color: Colors.white70,
               ),
               Container(
                 width: MediaQuery.of(context).size.width,
@@ -228,35 +234,44 @@ class _MCardLoadState extends State<MCardLoad> {
   Widget build(BuildContext context) {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: 5,
+      itemCount: 10,
       itemBuilder: (context, int index) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            ConstrainedBox(
-                constraints: new BoxConstraints(
-                    maxHeight: 290.0,
-                    minHeight: 190.0,
-                    minWidth: MediaQuery.of(context).size.width * .45,
-                    maxWidth: MediaQuery.of(context).size.width * .45),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                            widget.snapshot.data.results[index].poster_path)),
-                    SizedBox(
-                      height: 1.0,
-                    ),
-                    Text(
-                      widget.snapshot.data.results[index].title,
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    )
-                  ],
-                )),
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            MovieDeeperDetais(widget.snapshot.data.results[index])));
+              },
+              child: ConstrainedBox(
+                  constraints: new BoxConstraints(
+                      maxHeight: 290.0,
+                      minHeight: 190.0,
+                      minWidth: MediaQuery.of(context).size.width * .45,
+                      maxWidth: MediaQuery.of(context).size.width * .45),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                              widget.snapshot.data.results[index].poster_path)),
+                      SizedBox(
+                        height: 1.0,
+                      ),
+                      Text(
+                        widget.snapshot.data.results[index].title,
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  )),
+            ),
             SizedBox(
               width: 15,
             )
@@ -289,8 +304,6 @@ class _MostWatcherState extends State<MostWatcher> {
             builder: (context, AsyncSnapshot<MovieModel> snapshot) {
               if (snapshot.hasData) {
                 return Container(
-
-
                   child: McardMostWatcherLoad(snapshot, widget.genresSnapshot),
                 );
               } else if (snapshot.hasError) {
@@ -349,8 +362,7 @@ class _McardMostWatcherState extends State<McardMostWatcherLoad> {
                 width: MediaQuery.of(context).size.width - 20 - 185,
                 height: 300,
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                     top: 20, left: 10, right: 10),
+                  padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
