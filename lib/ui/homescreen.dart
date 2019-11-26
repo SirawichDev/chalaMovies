@@ -152,7 +152,7 @@ class _ContentPageState extends State<ContentPage> {
                   ],
                 ),
               ),
-              CurrentMovies(),
+              CurrentMovies(widget.snapshotGenres),
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: 28,
@@ -191,6 +191,8 @@ class _ContentPageState extends State<ContentPage> {
 }
 
 class CurrentMovies extends StatefulWidget {
+  AsyncSnapshot<GenreModel> snapshotGenres;
+  CurrentMovies(this.snapshotGenres);
   @override
   _CurrentMoviesState createState() => _CurrentMoviesState();
 }
@@ -207,7 +209,7 @@ class _CurrentMoviesState extends State<CurrentMovies> {
             padding: EdgeInsets.all(3),
             width: MediaQuery.of(context).size.width - 20,
             height: 300,
-            child: MCardLoad(snapshot),
+            child: MCardLoad(snapshot,widget.snapshotGenres),
           );
         } else if (snapshot.hasError) {
           return Text(snapshot.error.toString());
@@ -222,8 +224,9 @@ class _CurrentMoviesState extends State<CurrentMovies> {
 
 class MCardLoad extends StatefulWidget {
   AsyncSnapshot<MovieModel> snapshot;
+  AsyncSnapshot<GenreModel> snapshotGenres;
 
-  MCardLoad(this.snapshot);
+  MCardLoad(this.snapshot,this.snapshotGenres);
 
   @override
   _MCardLoadState createState() => _MCardLoadState();
@@ -236,6 +239,7 @@ class _MCardLoadState extends State<MCardLoad> {
       scrollDirection: Axis.horizontal,
       itemCount: 10,
       itemBuilder: (context, int index) {
+        String genres = widget.snapshotGenres.data.get_genre(widget.snapshot.data.results[index].genre_ids);
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
@@ -245,7 +249,7 @@ class _MCardLoadState extends State<MCardLoad> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            MovieDeeperDetais(widget.snapshot.data.results[index])));
+                            MovieDeeperDetais(widget.snapshot.data.results[index],genres)));
               },
               child: ConstrainedBox(
                   constraints: new BoxConstraints(
